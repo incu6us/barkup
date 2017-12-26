@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"log"
 	"os"
+	"strings"
 
 	"gopkg.in/amz.v3/aws"
 	"gopkg.in/amz.v3/s3"
@@ -58,10 +59,20 @@ func (x *S3) Store(result *ExportResult, directory string) *Error {
 		SecretKey: x.ClientSecret,
 	}
 
-	s := s3.New(auth, aws.Regions[x.Region])
+	var s *s3.S3
 	if x.Endpoint != "" {
-		s.S3Endpoint = x.Endpoint
+		if !strings.HasSuffix(x.Endpoint, "/") {
+			x.Endpoint += "/"
+		}
+		region := aws.Region{
+			Name:             x.Region,
+			S3BucketEndpoint: x.Endpoint,
+		}
+		s = s3.New(auth, region)
+	} else {
+		s = s3.New(auth, aws.Regions[x.Region])
 	}
+
 	bucket, err := s.Bucket(x.Bucket)
 	if err != nil {
 		log.Printf("Bucket error: %s", err)
