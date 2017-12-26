@@ -4,8 +4,8 @@ import (
 	"bufio"
 	"os"
 
-	"github.com/goamz/goamz/aws"
-	"github.com/goamz/goamz/s3"
+	"gopkg.in/amz.v1/aws"
+	"gopkg.in/amz.v1/s3"
 )
 
 // S3 is a `Storer` interface that puts an ExportResult to the specified S3 bucket. Don't use your main AWS keys for this!! Create read-only keys using IAM
