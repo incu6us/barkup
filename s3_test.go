@@ -1,7 +1,7 @@
 package barkup
 
 import (
-	"launchpad.net/goamz/aws"
+	"github.com/goamz/goamz/aws"
 	"os"
 	"testing"
 )
