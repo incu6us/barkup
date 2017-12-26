@@ -2,13 +2,17 @@ package barkup
 
 import (
 	"bufio"
+	"os"
+
 	"launchpad.net/goamz/aws"
 	"launchpad.net/goamz/s3"
-	"os"
 )
 
 // S3 is a `Storer` interface that puts an ExportResult to the specified S3 bucket. Don't use your main AWS keys for this!! Create read-only keys using IAM
 type S3 struct {
+	// for DigitalOcean purpose, like:
+	// https://nyc3.digitaloceanspaces.com
+	Endpoint string
 	// Available regions:
 	// * us-east-1
 	// * us-west-1
@@ -54,6 +58,9 @@ func (x *S3) Store(result *ExportResult, directory string) *Error {
 	}
 
 	s := s3.New(auth, aws.Regions[x.Region])
+	if x.Endpoint != "" {
+		s.S3Endpoint = x.Endpoint
+	}
 	bucket := s.Bucket(x.Bucket)
 
 	err = bucket.PutReader(directory+result.Filename(), buffy, size, result.MIME, s3.BucketOwnerFull)
