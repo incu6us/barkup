@@ -2,10 +2,11 @@ package barkup
 
 import (
 	"bufio"
+	"log"
 	"os"
 
-	"gopkg.in/amz.v1/aws"
-	"gopkg.in/amz.v1/s3"
+	"gopkg.in/amz.v3/aws"
+	"gopkg.in/amz.v3/s3"
 )
 
 // S3 is a `Storer` interface that puts an ExportResult to the specified S3 bucket. Don't use your main AWS keys for this!! Create read-only keys using IAM
@@ -61,7 +62,11 @@ func (x *S3) Store(result *ExportResult, directory string) *Error {
 	if x.Endpoint != "" {
 		s.S3Endpoint = x.Endpoint
 	}
-	bucket := s.Bucket(x.Bucket)
+	bucket, err := s.Bucket(x.Bucket)
+	if err != nil {
+		log.Printf("Bucket error: %s", err)
+		return makeErr(err, "")
+	}
 
 	err = bucket.PutReader(directory+result.Filename(), buffy, size, result.MIME, s3.BucketOwnerFull)
 	return makeErr(err, "")
