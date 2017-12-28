@@ -188,7 +188,9 @@ Region IDs
 * ap-northeast-1
 * sa-east-1
 
-DigitalOcean Support(NY example):
+DigitalOcean Support
+
+NY example:
 
 	s3 := &barkup.S3{
 		Endpoint:"https://test-bucker01.nyc3.digitaloceanspaces.com",
