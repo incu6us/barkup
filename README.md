@@ -251,7 +251,7 @@ err := someExportResult.To("data/", s3)
 example for NY:
 ```go
 s3 := &barkup.S3{
-	Endpoint:"https://test-bucker01.nyc3.digitaloceanspaces.com",
+	Endpoint: "https://test-bucker01.nyc3.digitaloceanspaces.com",
     Region: "nyc3",
     Bucket: "test-bucker01",
     AccessKey: "XXXXXXXXXXXXX",
