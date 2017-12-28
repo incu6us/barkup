@@ -1,5 +1,6 @@
 package barkup
 
+// TODO: prepare a tests
 import (
 	"fmt"
 	"os"
@@ -41,7 +42,6 @@ func (x Location) Export() *ExportResult {
 		result.Error = makeErr(err, "")
 		return result
 	}
-
 
 	return result
 }

@@ -1,15 +1,45 @@
 # Barkup
 
-[![Build Status](https://travis-ci.org/keighl/barkup.png?branch=master)](
-https://travis-ci.org/keighl/barkup) [![Coverage Status](https://coveralls.io/repos/keighl/barkup/badge.svg?branch=master)](https://coveralls.io/r/keighl/barkup?branch=master)
-
-[godoc.org/github.com/keighl/barkup](http://godoc.org/github.com/keighl/barkup)
+[godoc.org/github.com/incu6us/barkup](http://godoc.org/github.com/incu6us/barkup)
 
 Barkup is a library for backing things up. It provides tools for writing bare-bones backup programs in Go. The library is broken out into **exporters** and **storers**. Currently, those are:
 
-**Exporters:** `MySQL` `Postgres` `RethinkDB`
+**Exporters:** `Location` `MySQL` `Postgres` `RethinkDB`
 
 **Storers:** `S3`
+
+## Quick Example (local file or dir to s3)
+
+Here's a go program that backups up a local files or dirs (`Exporter`) to an S3 bucket (`Storer`) using barkup. The resulting executable is plopped on a server somewhere and scheduled to execute via CRON.
+
+```go
+package main
+
+import "github.com/incu6us/barkup"
+
+func main() {
+
+    // Configure a Location exporter
+    location := &barkup.Location{
+        Path: "/etc/issue",
+    }
+
+    // Configure a S3 storer
+    s3 := &barkup.S3{
+        Region:       "us-east-1",
+        Bucket:       "backups",
+        AccessKey:    "*************",
+        ClientSecret: "**********************",
+    }
+
+    // Export the database, and send it to the
+    // bucket in the `location_backups` folder
+    err := location.Export().To("location_backups/", s3)
+    if err != nil {
+        panic(err)
+    }
+}
+```
 
 ## Quick Example (mysql to s3)
 
@@ -18,7 +48,7 @@ Here's a go program that backups up a MySQL database (`Exporter`) to an S3 bucke
 ```go
 package main
 
-import "github.com/keighl/barkup"
+import "github.com/incu6us/barkup"
 
 func main() {
 
@@ -217,3 +247,14 @@ err := someExportResult.To("data/", s3)
 * ap-northeast-1
 * sa-east-1
 
+##### DigitalOcean Support
+example for NY:
+```go
+s3 := &barkup.S3{
+	Endpoint:"https://test-bucker01.nyc3.digitaloceanspaces.com",
+    Region: "nyc3",
+    Bucket: "test-bucker01",
+    AccessKey: "XXXXXXXXXXXXX",
+    ClientSecret: "XXXXXXXXXXXXXXXXXXXXX",
+}
+```
