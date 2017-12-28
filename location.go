@@ -4,7 +4,13 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"strings"
 	"time"
+)
+
+var (
+	// TarCmd is the path to the `tar` executable
+	CopyCmd = "cp"
 )
 
 // Location is an `Exporter` interface that backs up a local file or directory
@@ -16,7 +22,14 @@ type Location struct {
 func (x Location) Export() *ExportResult {
 	result := &ExportResult{MIME: "application/x-tar"}
 
-	dumpPath := fmt.Sprintf(`%v_%v`, x.Path, time.Now().Unix())
+	dumpName := strings.Split(x.Path, string(os.PathSeparator))
+	dumpPath := fmt.Sprintf(`%v_%v`, dumpName[len(dumpName)-1], time.Now().Unix())
+
+	cpOut, err := exec.Command(CopyCmd, "-r", x.Path, dumpPath).Output()
+	if err != nil {
+		result.Error = makeErr(err, string(cpOut))
+		return result
+	}
 
 	result.Path = dumpPath + ".tar.gz"
 	out, err := exec.Command(TarCmd, "-czf", result.Path, dumpPath).Output()
@@ -24,7 +37,11 @@ func (x Location) Export() *ExportResult {
 		result.Error = makeErr(err, string(out))
 		return result
 	}
-	os.Remove(dumpPath)
+	if err := os.RemoveAll("./"+dumpPath); err != nil {
+		result.Error = makeErr(err, "")
+		return result
+	}
+
 
 	return result
 }
