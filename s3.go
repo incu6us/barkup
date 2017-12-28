@@ -14,7 +14,7 @@ import (
 type S3 struct {
 	// for DigitalOcean purpose, like:
 	// https://nyc3.digitaloceanspaces.com
-	Endpoint string
+	BucketEndpoint string
 	// Available regions:
 	// * us-east-1
 	// * us-west-1
@@ -60,13 +60,13 @@ func (x *S3) Store(result *ExportResult, directory string) *Error {
 	}
 
 	var s *s3.S3
-	if x.Endpoint != "" {
-		if !strings.HasSuffix(x.Endpoint, "/") {
-			x.Endpoint += "/"
+	if x.BucketEndpoint != "" {
+		if !strings.HasSuffix(x.BucketEndpoint, "/") {
+			x.BucketEndpoint += "/"
 		}
 		region := aws.Region{
 			Name:             x.Region,
-			S3BucketEndpoint: x.Endpoint,
+			S3BucketEndpoint: x.BucketEndpoint,
 		}
 		s = s3.New(auth, region)
 	} else {
